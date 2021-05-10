@@ -1,0 +1,17 @@
+#home-header {
+    & > div {
+        background: #96CDFF;
+        padding: 10vh;
+    }
+}
+
+#main-home-div {
+    background: #D8E1FF;
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+
+    & #input-form {
+        width: 100vh;
+        padding-top: 2vh;
+    }
+}

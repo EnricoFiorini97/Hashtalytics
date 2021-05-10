@@ -1,0 +1,80 @@
+{% extends 'index.html' %}
+{% load crispy_forms_tags %}
+{% crispy example_form example_form.helper %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div id="details-header" class="col">
+            {% if hasher %}
+              <h1 class="text-center">Tweets contenenti la parola
+                <a href="https://twitter.com/search?q=%23{{ hasher }}&src=hashtag_click">
+                  {{ hasher }}
+                </a>
+              </h1>
+            {% endif %}
+            <div class="d-flex justify-content-center">
+                <button {% if errors %}disabled{% endif %} type="button" class="btn btn-primary btn-lg" onclick="downloadData({{ tweets }}, '{{ tag }}', '{{ hasher }}')">Download CSV</button>
+            </div>
+            <p class="text-center">
+            </p>
+        </div>
+    </div>
+
+  <div class="py-5">
+    <div class="container">
+      <div class="row hidden-md-up">
+        {% for error in errors %}
+        <div class="alert alert-danger" role="alert">{{ error.message }}</div>
+        {% endfor %}
+
+        {% for tweet in tweets %}
+            <!--Card Header-->
+            <div class="col-md-4" style="padding-top: 5vh; ">
+                <div class="card w-70" >
+                  <div class="card-header">
+                      <div class="d-flex flex-row justify-content-start">
+                        <div class="p-2">
+                            <img src="{{ tweet.user.profile_image_url_https }}" alt="ProPic" class="rounded-circle">
+                        </div>
+                        <div class="p-2">
+                            <a href="https://twitter.com/{{ tweet.user.screen_name }}">
+                                <h5 class="card-title" style="padding:2vh">{{ tweet.user.screen_name }}</h5>
+                            </a>
+                        </div>
+                      </div>
+                  </div>
+                <!--Card Body-->
+                  <div class="card-body">
+                    <p class="card-text">{{ tweet.text }}</p>
+
+                    <small class="text-muted">{{ tweet.created_at }}</small>
+                  </div>
+                <!--Card Footer-->
+                  <div class="card-footer" style="padding: 2vh">
+                        <small class="text-muted d-flex flex-nowrap">
+                            <div class="order-1 p-2">
+                                <i class="material-icons">favorite_border</i>
+                            </div>
+                            <div class="order-2 p-2">
+                                <a href="https://twitter.com/anyuser/status/{{ tweet.id }}">
+                                  <h6 class="card-subtitle text-muted text-align-center" style="padding: 1vh">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                                      <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                                      <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                                    </svg>
+                                    Vai al tweet
+                                  </h6>
+                                </a>
+                            </div>
+                        </small>
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

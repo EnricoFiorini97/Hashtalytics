@@ -1,0 +1,30 @@
+{% extends 'index.html' %}
+{% load crispy_forms_tags %}
+{% crispy example_form example_form.helper %}
+
+{% block content %}
+
+    <table class="table table-striped table-dark">
+      <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Hashtag</th>
+            <th scope="col">URL</th>
+            <th scope="col">Grafico</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for trend in trends_list %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ trend.name }}</td>
+            <td><a href="{{ trend.url }}">{{ trend.url }}</a></td>
+            <td><a href="/graphics/">Dettaglio</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="downloadTrendsData({{ trends }}, '{{ trends_count }}')">DOWNLOAD CSV</button>
+
+{% endblock %}
