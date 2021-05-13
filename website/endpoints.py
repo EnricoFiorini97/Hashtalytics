@@ -21,5 +21,5 @@ def get_trends_url():
     return base_url + "/trends"
 
 
-def get_graphics_url():
+def get_graphs_url():
     return get_trends_url() + "/graphics"

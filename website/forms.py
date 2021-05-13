@@ -13,6 +13,7 @@ class MainForm(forms.Form):
         helper.form_id='Submit_research'
         helper.form_class='submit'
         helper.add_input(Submit('submit','Cerca'))
+        helper.disable_csrf = True
 
         return helper
 

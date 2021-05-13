@@ -1,10 +1,7 @@
-const rome = [12.534216244956292, 41.7409352435425]
-const deltaLong = 7.5;
-const deltaLat = 5.8;
-
-const ws_max = [rome[0] - deltaLong, rome[1] - deltaLat];
-const en_max = [rome[0] + deltaLong, rome[1] + deltaLat];
-let data, map, request_format;
+const ws_max = [6.61666667, 35.48333333]
+const en_max = [18.51666667, 47.08333333]
+let data, map, request_format
+let markers = []
 
 class SearchControl {
     onAdd(map) {
@@ -24,8 +21,7 @@ class SearchControl {
     }
 }
 
-function makeMap(c, token) {
-    mapboxgl.accessToken = token
+function makeMap(c) {
     const center = JSON.parse(c)
 
     const delta = 1.59275 * Math.PI / 180
@@ -34,7 +30,7 @@ function makeMap(c, token) {
     const en = [center[0] + delta, center[1] + delta];
 
     map = new mapboxgl.Map({
-        container: 'map',
+        container: document.getElementById('map'),
         //custom style
         style: 'mapbox://styles/andter99/ckodi69160sje17p7inup5501',
         center: center,
@@ -43,30 +39,10 @@ function makeMap(c, token) {
         maxBounds: [ws_max, en_max],
     });
 
-    getData({
-        lng: center[0],
-        lat: center[1]
-    })
-
     map.addControl(new mapboxgl.NavigationControl(), 'top-left')
     map.addControl(new mapboxgl.ScaleControl())
     map.addControl(new SearchControl(), 'top-right')
 
-    map.on('load', () => {
-        //things to do after map is loaded
-
-        // add markers to map - SARÀ UTILE IN FUTURO
-        /*points.forEach(function (p) {
-            // create a HTML element for each feature
-            var el = document.createElement('div');
-            el.className = "tweet-marker"
-
-            // make a marker for each feature and add to the map
-            new mapboxgl.Marker(el)
-                .setLngLat(p)
-                .addTo(map);
-        });*/
-    })
     map.on('movestart', function () {
         let btn = document.getElementById("map-search-btn")
         btn.disabled = true
@@ -75,6 +51,11 @@ function makeMap(c, token) {
         let btn = document.getElementById("map-search-btn")
         btn.disabled = false
     });
+
+    getData({
+        lng: center[0],
+        lat: center[1]
+    })
 }
 
 function searchBtnClicked() {
@@ -85,20 +66,9 @@ function searchBtnClicked() {
 }
 
 function onDownloadClicked() {
-    const center = map.getCenter()
+    let center = map.getCenter()
 
-    console.log(center)
-
-    const obj = {
-        "data" : data
-    }
-
-    console.log(obj)
-
-    //FIXME: Al momento è improponibile scaricare a rudo i dati ottenuti da Twitter in quanto contorti
-    console.log("tiscatusca")
-
-    //downloadMapData(obj, center)
+    downloadMapData({"data": data}, [center.lng, center.lat])
 }
 
 async function getData() {
@@ -109,19 +79,51 @@ async function getData() {
 
     try {
         const response = await fetch(request_format.format(lat, long, rad))
-        data = (await response.json()).statuses
+        const stats = (await response.json()).statuses
+
+        //Filtraggio dei dati ricevuti da twitter
+        data = []
+        stats.forEach((s) => {
+            let c = s.coordinates
+            data.push({
+                "id_str": s.id_str,
+                "created_at": s.created_at,
+                "coords": `${(c != null) ? JSON.stringify(c.coordinates) : null}`,
+                "lang": `${(s.lang !== "und") ? s.lang : null}`,
+                "text": s.text,
+                "user_id": s.user.id_str,
+                "user_name": s.user.name,
+                "user_scrn_name": s.user.screen_name
+            })
+        })
+
+        let filler = document.getElementById("galangalo")
+        if (filler != null) {
+            document.removeChild(filler)
+        }
 
         let column = document.getElementById("map-results")
-
         while (column.hasChildNodes()) {
             column.removeChild(column.lastChild);
         }
 
+        markers.forEach((m) => m.remove())
+
         if (data.length > 0) {
-            data.forEach((stat) => {
+            data.forEach((d) => {
+                let c = JSON.parse(d.coords)
+                if (c != null) {
+                    // create a HTML element for each feature
+                    let el = document.createElement('div')
+                    el.className = "tweet-marker"
+
+                    // make a marker for each feature and add to the map
+                    markers.push(new mapboxgl.Marker(el).setLngLat(c).addTo(map))
+                }
+
                 let row = document.createElement("div")
                 row.className = "row"
-                row.textContent = stat.text
+                row.textContent = d.text
                 column.append(row)
             })
         } else {
@@ -131,7 +133,7 @@ async function getData() {
             column.append(row)
         }
     } catch (e) {
-        console.log("ops")
+        console.error(e)
     }
 }
 

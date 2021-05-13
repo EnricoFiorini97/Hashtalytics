@@ -5,26 +5,32 @@
 {% block content %}
 
     <table class="table table-striped table-dark">
-      <thead>
+        <thead>
         <tr>
             <th scope="col">#</th>
             <th scope="col">Hashtag</th>
             <th scope="col">URL</th>
             <th scope="col">Grafico</th>
+            <th scope="col">
+                <button type="button" class="btn btn-secondary btn-lg btn-block"
+                        onclick="downloadTrendsData({{ trends }}, '{{ trends_count }}')">DOWNLOAD CSV
+                </button>
+            </th>
         </tr>
-      </thead>
-      <tbody>
-      {% for trend in trends_list %}
-        <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td>{{ trend.name }}</td>
-            <td><a href="{{ trend.url }}">{{ trend.url }}</a></td>
-            <td><a href="/graphics/">Dettaglio</a></td>
-        </tr>
-      {% endfor %}
-      </tbody>
+        </thead>
+        <tbody>
+        {% for trend in trends_list %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ trend.name }}</td>
+                <td><a href="{{ trend.url }}">{{ trend.url }}</a></td>
+                <td>
+                    <a type="button" class="btn btn-dark" href="/graphics/">Dettaglio</a>
+                </td>
+                <td> <!--non mi eliminare--> </td>
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
-
-    <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="downloadTrendsData({{ trends }}, '{{ trends_count }}')">DOWNLOAD CSV</button>
 
 {% endblock %}

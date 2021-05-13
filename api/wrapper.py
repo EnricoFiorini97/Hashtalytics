@@ -26,20 +26,20 @@ class TWrapper:
         return {
             "status": status,
             "body": json.dumps(body)
-        }
+            }
 
     @staticmethod
     def __handle_error(error, context=""):
-        if error.get("code") == TweepyError.INVALID_HASHTAG:
+        if error.get("code") == TweepyError.INVALID_HASHTAG.value:
             if context == "hashtag":
                 return TWrapper.__get_response({"error": ApiError.INVALID_HASHTAG.value}, HTTPStatus.BAD_REQUEST)
             if context == "text":
                 return TWrapper.__get_response({"error": ApiError.INVALID_TEXT.value}, HTTPStatus.BAD_REQUEST)
             return TWrapper.__get_response({"error": ApiError.INVALID_INPUT.value}, HTTPStatus.BAD_REQUEST)
-        if error.get("code") == TweepyError.INVALID_USER:
+        if error.get("code") == TweepyError.INVALID_USER.value:
             return TWrapper.__get_response({"error": ApiError.USER_NOT_FOUND.value}, HTTPStatus.NOT_FOUND)
         else:
-            return TWrapper.__get_response(error, HTTPStatus.INTERNAL_SERVER_ERROR)
+            return TWrapper.__get_response({"error": f"ERROR {error.get('code')}: {error.get('message')}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def get_version(self):
         ''' Returns current TWrapper version. '''
@@ -76,7 +76,7 @@ class TWrapper:
     def fetch_hashtag(self, hashtag="twitter"):
         ''' Returns hashtag data '''
         try:
-            return TWrapper.__get_response(self.__api.search(hashtag))
+            return TWrapper.__get_response(self.__api.search(f"#{hashtag} -RT"))
         except tweepy.error.TweepError as e:
             return TWrapper.__handle_error(e.args[0][0], "hashtag")
 
@@ -89,14 +89,16 @@ class TWrapper:
             
     def fetch_timeline(self, user="@twitter"):
         req = self.fetch_tweets(user)
-        if req.get("status") != HTTPStatus.OK or req.get("body") is None:
+        if req.get("status") != HTTPStatus.OK or not req.get("body"):
             TWrapper.__handle_error(req)
-
-        tmp = json.loads(self.fetch_tweets(user))
+        tmp = json.loads(req['body'])
         res = ""
         for i in range(len(tmp)):
             try:
                 if tmp[i]['place']['bounding_box']['coordinates']:
                     res += str(tmp[i])
-            except TypeError:   pass
+            except (TypeError, KeyError):   pass
+        #You're not supposed to understand this - DO NOT TOUCH (we know it's awful, but trust us..)
+        if res == "":
+            res = "{status:200, body: user not geolocalized or user not found}"
         return TWrapper.__get_response(res)

@@ -1,34 +1,42 @@
 {% extends 'index.html' %}
-{% load crispy_forms_tags %}
 {% load static %}
-{% crispy example_form example_form.helper %}
 
 {% block content %}
     <div class="container">
+        <div class="row">
+            <div id="page-header" class="col">
+                <h1 class="text-center">Tweet a {{ place }}</h1>
+            </div>
+        </div>
         <div class="row" style="padding: 2vh;">
             {% if valid %}
-            <div class="col">
-                <script src={% static 'js/map.js' %}></script>
-                <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
-                <div id='map' style='width: 600px; height: 600px;'></div>
-                <script>
-                    request_format = '{{ request_url_format }}'
-                    makeMap('{{ center | escapejs }}', '{{ token }}')
-                </script>
-            </div>
-            <div class="col" style="padding: 2vh;">
-                <div class="d-flex flex-row justify-content-between">
-                    <div class="align-self-center">Risultati:</div>
-                    <button class="btn btn-primary btn-md" onclick=onDownloadClicked()>Download CSV</button>
+                <div class="col">
+                    <div id='map' style='width: 600px; height: 600px;'></div>
                 </div>
-                <div id="map-results" class="col">
-                    {# I tweet vengono inseriti qua via JS #}
+                <div class="col" style="padding: 0;">
+                    <div class="d-flex flex-row justify-content-between" style="padding: 2vh;">
+                        <h4 class="align-self-center">Risultati:</h4>
+                        <button class="btn btn-primary btn-md" onclick=onDownloadClicked()>Download CSV</button>
+                    </div>
+
+                    <div id="map-results" class="col">
+                        <div id="loading-filler" class="row alert alert-primary">Searching...</div>
+                        {# I tweet vengono inseriti qua via JS #}
+                    </div>
                 </div>
-            </div>
             {% else %}
-                <div class="alert alert-danger"> Posizione non valida </div>
+                <div class="alert alert-danger"> Posizione non valida</div>
             {% endif %}
         </div>
     </div>
+
+    <!-- script mappa -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+    <script src={% static 'js/map.js' %}></script>
+    <script>
+        request_format = '{{ request_url_format }}'
+        mapboxgl.accessToken = '{{ token }}'
+        makeMap('{{ center | escapejs }}')
+    </script>
 
 {% endblock %}

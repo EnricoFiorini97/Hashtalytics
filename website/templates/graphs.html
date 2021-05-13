@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+    <body>
+    <div class="container">
+        <div class="row">
+            <div id="page-header" class="col">
+                <h1 class="text-center">Grafico</h1>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center" style="padding: 5vh;">
+            <div id="graph"></div>
+        </div>
+    </div>
+
+    <!-- script grafici -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="{% static 'js/graphs.js' %}"></script>
+{% endblock %}

@@ -2,3 +2,13 @@
 @import "index-style";
 @import "home-style";
 @import "map-style";
+@import "graphs-style";
+
+#page-header {
+    background: #96CDFF;
+    padding: 10vh;
+
+    & div {
+        padding-top: 3vh;
+    }
+}

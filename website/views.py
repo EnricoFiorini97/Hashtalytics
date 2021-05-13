@@ -18,39 +18,52 @@ def home(request):
 
 @require_http_methods(["GET", "HEAD"])
 def details(request):
+    hasherQuery = request.GET.get("hasher")
+    tag = None
+    hasher = hasherQuery
     try:
-        if (request.GET.get("hasher")[:1] == '@' or request.GET.get("hasher")[:1] == '#' or request.GET.get("hasher")[
-                                                                                            :1] == '$'):
-            tag = request.GET.get("hasher")[:1]
-            hasher = request.GET.get("hasher")[1:]
-        else:
-            tag = None
-            hasher = request.GET.get("hasher")
-    except TypeError as e:
-        # return _handleError(Error.INVALID_INPUT)
-        return render(request, 'hashtag-details.html', {"error": "Invalid input"}, status=400)
+        if hasherQuery[:1] in ['@','#','$']:
+            tag = hasherQuery[:1]
+            hasher = hasherQuery[1:]
+    except TypeError:
+        # TODO: valutare se sostituire con un redirect alla home
+        return render(request, 'details.html', {"error": "Input non valido"}, status=400)
 
     if tag == "#":
-        url = get_hashtag_url(hasher)
-        r = requests.get(url, headers={'Content-Type': 'application/json'})
-        tweets = r.json().get("statuses")
-        return render(request, 'hashtag-details.html', {"tweets": tweets, "hasher": hasher, "tag": tag}, status=200)
+        try:
+            url = get_hashtag_url(hasher)
+            r = requests.get(url, headers={'Content-Type': 'application/json'})
+            res_obj = r.json()
+            tweets = res_obj.get("statuses")
+            error_code = res_obj.get("error")
+
+            # la risposta deve avere dentro i tweets, oppure un errore se non ha
+            # nessuna delle due cose è successo qualcosa di inaspettato e ritorniamo 500
+            if not error_code and not tweets:
+                raise KeyError("Errore del sistema, contattare il supporto clienti")
+
+            status = r.status_code
+            error = error_code # TODO: scrivere un messaggio carino di errore in base all'error_code
+            return render(request, 'hashtag-details.html', {"tweets": tweets, "hasher": hasher, "tag": tag, "error": error}, status=status)
+        except KeyError as e:
+            error = e.args[0]
+            return render(request, 'hashtag-details.html', {"error": error, "hasher": hasher, "tag": tag}, status=500)
 
     if tag == "@":
         url = get_user_url(hasher)
         r = requests.get(url, headers={'Content-Type': 'application/json'})
         tweets = r.json()
         return render(request, 'details.html', {"tweets": tweets, "hasher": hasher, "tag": tag}, status=200)
-
-    if tag == "$":
-        return get_map(hasher, request)
-
-    # Se il nome cercato non contiene ne una @ ne un #, oppure $, allora la ricerca viene eseguita per tutta la
-    # lunghezza dell'hasher
-    url = get_text_url(hasher)
-    r = requests.get(url, headers={'Content-Type': 'application/json'})
-    tweets = r.json().get("statuses")
-    return render(request, 'text-details.html', {"tweets": tweets, "hasher": hasher, "tag": tag}, status=200)
+    elif tag == "$":
+        tags = get_map(hasher, request)
+        return render(request, 'map.html', tags, status=200)
+    else:
+        # Se il nome cercato non contiene un tag valido (#,@, o $), allora la ricerca viene eseguita per tutta la
+        # lunghezza dell'hasher
+        url = get_text_url(hasher)
+        r = requests.get(url, headers={'Content-Type': 'application/json'})
+        tweets = r.json().get("statuses")
+        return render(request, 'text-details.html', {"tweets": tweets, "hasher": hasher, "tag": tag}, status=200)
 
     # errors = []
 
@@ -110,8 +123,8 @@ def geocoding(place):
     coords = geocoder.mapbox(place, key=env.MAPBOX_PUB_KEY).latlng
     # Più o meno gli angoli del quadrato di coordinate contenente l'Italia
     # Servono a filtrare posti chiaramente NON in Italia (e.g. Pechino)
-    ws = [5.034216244956292, 35.940935243542505]
-    en = [20.03421624495629, 47.5409352435425]
+    ws = [6.61666667, 35.48333333]
+    en = [18.51666667, 47.08333333]
 
     if coords is None:
         return None
@@ -125,17 +138,16 @@ def geocoding(place):
 
 def get_map(place, request):
     center = geocoding(place)
-    return render(request, 'map.html',
-                  {'center': json.dumps(center), 'valid': (center is not None),
-                   'request_url_format': get_location_url("{0}", "{1}", "{2}"),
-                   'token': env.MAPBOX_PUB_KEY}, status=200)
+    return {'center': json.dumps(center), 'place': place, 'valid': (center is not None),
+            'request_url_format': get_location_url("{0}", "{1}", "{2}"),
+            'token': env.MAPBOX_PUB_KEY}
 
 
 @require_http_methods(["GET", "HEAD"])
-def graphics(request):
-    return render(request, 'graphics.html', {"graphics": _get_graphics()})
+def graphs(request):
+    return render(request, 'graphs.html', {"graphs": _get_graphs()})
 
 
-def _get_graphics():
-    url = get_graphics_url()
+def _get_graphs():
+    url = get_graphs_url()
     return url

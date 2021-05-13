@@ -13,13 +13,12 @@ function downloadTrendsData(data, count=50) {
     downloadData(data, "tr", `top-${count}`)
 }
 
-function downloadData(data, tag, name) {
-    const tweets = data["data"]
+function downloadData(json_data, tag, name) {
+    tweets = JSON.parse(json_data)
     const fields = Object.keys(tweets[0])
 
     const type = tags[tag]
     const csv = [
-        ["type:", type].join(" "),
         fields.join(','),
         tweets.map(row =>
             fields.map(fieldName => JSON.stringify(row[fieldName])).join(',')

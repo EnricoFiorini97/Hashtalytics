@@ -3,59 +3,61 @@
 {% crispy example_form example_form.helper %}
 
 {% block content %}
-<div class="container">
-    <div id="home-header" class="row">
-        <div class="col">
-            <h1 class="text-center">HASHTALYTICS</h1>
-            <p class="text-center">
-            L'Interfaccia web per l’analisi dei tweet raccolti per rilevare gli hashtag in tendenza.
-            </p>
+    <div class="container">
+        <div id="page-header" class="row">
+            <div class="col">
+                <h1 class="text-center">HASHTALYTICS</h1>
+                <p class="text-center">
+                    L'Interfaccia web per l’analisi dei tweet raccolti per rilevare gli hashtag in tendenza.
+                </p>
+            </div>
         </div>
-    </div>
-    <div id="main-home-div" class="row d-flex justify-content-around">
-        <div class="col-6">
-            <!--barra di ricerca-->
-            <div class="input-group rounded">
-                <div class="col">
-                    <h5>Come funziona?</h5>
-                    <p>Cerca un #hashtag o uno @username, lo analizzeremo e avrai accesso a tutte le statistiche.</p>
+        <div id="main-home-div" class="row d-flex justify-content-around">
+            <div class="col-6">
+                <!--barra di ricerca-->
+                <div class="input-group rounded">
+                    <div class="col">
+                        <h5>Come funziona?</h5>
+                        <p>Cerca un #hashtag o uno @username, lo analizzeremo e avrai accesso a tutte le
+                            statistiche.</p>
+                    </div>
+                    <form id="input-form" method="GET" action="/details/"
+                          class="form-inline d-flex justify-content-start">
+                        {% crispy form %}
+                    </form>
                 </div>
-                <form id="input-form" method="GET" action="/details/" class="form-inline d-flex justify-content-start">
-                    {% crispy form %}
-                </form>
+            </div>
+
+            <div class="col-4">
+                <div class="jumbotron">
+                    <div class="card-header">
+                        <h3 class="display-6">TOP #10 tweets</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Hashtag</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for trend in trends %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td><a href="{{ trend.url }}">{{ trend.name }}</a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <a href="/trends/" class="btn btn-primary">Sfoglia...</a>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="col-4">
-            <div class="jumbotron">
-              <div class="card-header">
-                  <h3 class="display-6">TOP #10 tweets</h3>
-              </div>
-              <div class="card-body">
-                  <table class="table table-sm">
-                      <thead>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Hashtag</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      {% for trend in trends %}
-                        <tr>
-                          <th scope="row">{{ forloop.counter }}</th>
-                          <td><a href="{{ trend.url }}">{{ trend.name }}</a></td>
-                        </tr>
-                      {% endfor %}
-                      </tbody>
-                  </table>
-                <a href="/trends/" class="btn btn-primary">Sfoglia...</a>
-              </div>
-            </div>
-        </div>
     </div>
-
     </div>
-</div>
 
 
 {% endblock %}
