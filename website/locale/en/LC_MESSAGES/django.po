@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-30 17:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: website/templates/details.html:15
+msgid "Tweets contenenti"
+msgstr "Tweets containing"
+
+#: website/templates/details.html:19
+msgid "Tweets di"
+msgstr "Tweets by"
+
+#: website/templates/details.html:26
+#, python-format
+msgid "Vai alla timeline di %(hasher)s"
+msgstr "Go to %(hasher)s's timeline"
+
+#: website/templates/details.html:32
+msgid "Tweets contenenti la parola"
+msgstr "Tweets containing the word"
+
+#: website/templates/details.html:58
+msgid "Percentuale dei tweet geolocalizzati"
+msgstr "Percentage of geolocalized tweets"
+
+#: website/templates/details.html:59
+msgid "Media Oraria"
+msgstr "Average tweets per hour"
+
+#: website/templates/details.html:60
+msgid "Orario medio di pubblicazione"
+msgstr "Average posting time"
+
+#: website/templates/details.html:121
+msgid "Vai al tweet"
+msgstr "Go to tweet"
+
+#: website/templates/home.html:14
+msgid ""
+"Interfaccia web per l’analisi dei tweet raccolti per rilevare gli hashtag in "
+"tendenza."
+msgstr "Web interface to analyse tweets and trending hashtags"
+
+#: website/templates/home.html:29
+msgid "Accedi per analizzare hashtag, username e luoghi"
+msgstr "Log in to analyze hashtags, users and locations"
+
+#: website/templates/home.html:57
+msgid "I TUOI TREND"
+msgstr "YOUR TRENDS"
+
+#: website/templates/home.html:70
+msgid "Nessuna keyword personale in tendenza..."
+msgstr "No personal keyword is trending..."
+
+#: website/templates/home.html:82
+msgid "Sfoglia..."
+msgstr "More..."
+
+#: website/templates/index.html:58
+msgid "Esci"
+msgstr "Log out"
+
+#: website/templates/index.html:62
+msgid "Profilo"
+msgstr "Profile"
+
+#: website/templates/index.html:67 website/templates/registration/login.html:19
+msgid "Registrati"
+msgstr "Register"
+
+#: website/templates/index.html:71 website/templates/registration/login.html:9
+#: website/templates/registration/user_create.html:19
+msgid "Accedi"
+msgstr "Log in"
+
+#: website/templates/map.html:9
+msgid "Tweet a "
+msgstr "Tweets in "
+
+#: website/templates/map.html:19
+msgid "Risultati:"
+msgstr "Results:"
+
+#: website/templates/map.html:24
+msgid "Ricerca in corso..."
+msgstr "Searching..."
+
+#: website/templates/map.html:29
+msgid "Posizione non valida"
+msgstr "Invalid location"
+
+#: website/templates/profile.html:10
+#, python-format
+msgid "Profilo di %(name)s"
+msgstr "%(name)s's profile"
+
+#: website/templates/profile.html:12
+msgid "Riceverai un alert se una tua keyword è in tendenza"
+msgstr "You will be alerted when one of your keywords is trending"
+
+#: website/templates/profile.html:17
+msgid "Inserisci parola chiave"
+msgstr "Insert keyword"
+
+#: website/templates/profile.html:20
+msgid "Invia"
+msgstr "Submit"
+
+#: website/templates/profile.html:25
+msgid "Cancella selezionati"
+msgstr "Remove selected"
+
+#: website/templates/profile.html:27
+msgid "Cancella tutto"
+msgstr "Remove all"
+
+#: website/templates/registration/logged_out.html:6
+msgid "Log out avvenuto con successo"
+msgstr "You have successfully logged out"
+
+#: website/templates/registration/login.html:14
+#: website/templates/registration/user_create.html:14
+msgid "Conferma"
+msgstr "Confirm"
+
+#: website/templates/registration/login.html:18
+msgid "Non hai un account?"
+msgstr "You don't have an account?"
+
+#: website/templates/registration/user_create.html:9
+msgid "Registrazione"
+msgstr "User registration"
+
+#: website/templates/registration/user_create.html:18
+msgid "Sei già registrato?"
+msgstr "Already registered?"
+
+#: website/templates/timeline.html:11
+#, python-format
+msgid ""
+" Timeline di <a href=\"https://twitter.com/%(hasher)s\">@%(hasher)s</a> "
+msgstr "<a href=\"https://twitter.com/%(hasher)s\">@%(hasher)s</a>'s timeline"
+
+#: website/templates/timeline.html:23
+msgid "Nessun tweet geolocalizzato"
+msgstr "No geolocalized tweets found"

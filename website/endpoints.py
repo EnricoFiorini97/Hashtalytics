@@ -1,25 +1,31 @@
-base_url = "http://127.0.0.1:8000/twapi"
+import env
+
+
+base_url = f"http://localhost:8000/twapi"
 
 
 def get_location_url(lat, lng, rad):
-    return base_url + f"/location/{lat}/{lng}/{rad}"
+    return f"{base_url}/location/{lat}/{lng}/{rad}"
 
 
 def get_hashtag_url(hshtg):
-    return base_url + f"/hashtag/{hshtg}"
+    return f"{base_url}/hashtag/{hshtg}"
 
 
 def get_user_url(usr):
-    return base_url + f"/user/{usr}"
+    return f"{base_url}/user/{usr}"
 
 
 def get_text_url(text):
-    return base_url + f"/text/{text}"
+    return f"{base_url}/text/{text}"
 
 
 def get_trends_url():
-    return base_url + "/trends"
+    return f"{base_url}/trends"
 
 
 def get_graphs_url():
-    return get_trends_url() + "/graphics"
+    return f"{get_trends_url()}/graphics"
+
+def get_timeline_url(usr):
+    return f"{base_url}/timeline/{usr}"

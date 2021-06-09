@@ -1,11 +1,12 @@
 {% extends 'index.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
         <div class="row">
             <div id="page-header" class="col">
-                <h1 class="text-center">Tweet a {{ place }}</h1>
+                <h1 class="text-center">{% trans 'Tweet a ' %}{{ place }}</h1>
             </div>
         </div>
         <div class="row" style="padding: 2vh;">
@@ -15,28 +16,32 @@
                 </div>
                 <div class="col" style="padding: 0;">
                     <div class="d-flex flex-row justify-content-between" style="padding: 2vh;">
-                        <h4 class="align-self-center">Risultati:</h4>
+                        <h4 class="align-self-center">{% trans "Risultati:" %}</h4>
                         <button class="btn btn-primary btn-md" onclick=onDownloadClicked()>Download CSV</button>
                     </div>
 
-                    <div id="map-results" class="col">
-                        <div id="loading-filler" class="row alert alert-primary">Searching...</div>
+                    <div id="map-results" class="col overflow-auto" style="max-height: 500px">
+                        <div id="loading-filler" class="row alert alert-primary">{% trans 'Ricerca in corso...' %}</div>
                         {# I tweet vengono inseriti qua via JS #}
                     </div>
                 </div>
             {% else %}
-                <div class="alert alert-danger"> Posizione non valida</div>
+                <div class="alert alert-danger"> {% trans 'Posizione non valida' %}</div>
             {% endif %}
         </div>
     </div>
+{% endblock %}
 
+{% block extra-scripts %}
     <!-- script mappa -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
     <script src={% static 'js/map.js' %}></script>
     <script>
-        request_format = '{{ request_url_format }}'
+        const user = "{{ user.username }}"
+        const auth = "{{ auth }}"
+        {% url 'display_location' '{0}' '{1}' '{2}' as req_url%}
+        const request_url = '{{ req_url }}'.replaceAll("%7B", "{").replaceAll("%7D", "}")
         mapboxgl.accessToken = '{{ token }}'
         makeMap('{{ center | escapejs }}')
     </script>
-
 {% endblock %}

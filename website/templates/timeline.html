@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    {% if hasher %}
+    <div class="container">
+        <div id="page-header" class="row">
+            <div class="col">
+                <h1 class="text-center">
+                    {% blocktranslate %} Timeline di <a href="https://twitter.com/{{ hasher }}">@{{ hasher }}</a> {% endblocktranslate %}
+                </h1>
+            </div>
+        </div>
+    </div>
+    <div class="timeline-container">
+        {{ tweets|json_script:"tweets-data" }}
+        <div class="timeline">
+            <ul>
+            {% if tweets.error == 'USER_NOT_FOUND' %}
+                <li>
+                    <div class="timeline-content">
+                        <h1>{% trans "Nessun tweet geolocalizzato" %}</h1>
+                    </div>
+                </li>
+            {% else %}
+            {% for tweet in tweets %}
+                <li>
+                    <div class="timeline-content">
+                        <h3 class="date">{{ tweet.created_at }}</h3>
+                        {% if tweet.place.place_type == 'city' and tweet.place.country_code == "IT" %}
+                            <h1><a href="/details/?hasher=%24{{ tweet.place.name }}">{{ tweet.place.name }}</a></h1>
+                        {% else %}
+                            <h1>{{ tweet.place.name }}</h1>
+                        {% endif %}
+                        <p>{{ tweet.text }}</p>
+                    </div>
+                </li>
+            {% endfor %}
+            {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -5,7 +5,7 @@ from django import forms
 from django import forms
 
 class MainForm(forms.Form):
-    hasher = forms.CharField(max_length=100,label="", widget=forms.TextInput(attrs={'placeholder': '@username o #hashtag'}))
+    hasher = forms.CharField(max_length=100,label="", widget=forms.TextInput(attrs={'placeholder': '@user #hashtag $luogo'}))
 
     @property
     def helper(self):

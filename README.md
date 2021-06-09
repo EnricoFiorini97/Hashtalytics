@@ -1,18 +1,3 @@
-## Gruppo 6
-
-### Membri
-
-| Nome | Matricola | Ruolo |
-| ------ | ------ | ------ |
-| Serena Passini | 136416 | Product Owner/Database |
-| Lucrezia Buonpensiero | 110796 | Scrum Master/User Interface |
-| Alex Golinelli | 116794 | Organizzatore/Developer Team |
-| Blu Borghi | 128807 | Developer/Backend/SYS OP |
-| Andrea Terenziani | 128590 | User Interface/Developer |
-| Enrico Fiorini | 128426 | Developer/Backend/SYS OP |
-| Carmine La Luna | 131015 | Developer/Backend/SYS OP |
-
-
 ### Descrizione della soluzione proposta
 
 Interfaccia web per l’analisi di tweet raccolti per rilevare gli hashtag in tendenza.

@@ -3,12 +3,12 @@
 @import "home-style";
 @import "map-style";
 @import "graphs-style";
+@import "timeline-style";
 
 #page-header {
-    background: #96CDFF;
-    padding: 10vh;
+    padding: 5vh;
 
     & div {
-        padding-top: 3vh;
+        padding-top: 1vh;
     }
 }

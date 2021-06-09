@@ -13,6 +13,9 @@ basicauth = "*"
 tweepy = "*"
 simplejson = "*"
 geocoder = "*"
+coverage = "*"
+django-crontab = "*"
+python-dateutil = "*"
 
 [dev-packages]
 

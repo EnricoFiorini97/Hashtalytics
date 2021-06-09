@@ -1,7 +1,12 @@
 const ws_max = [6.61666667, 35.48333333]
 const en_max = [18.51666667, 47.08333333]
-let data, map, request_format
+let data, map
 let markers = []
+let rows = []
+let selected = {
+    "row": null,
+    "marker": null
+}
 
 class SearchControl {
     onAdd(map) {
@@ -45,6 +50,7 @@ function makeMap(c) {
 
     map.on('movestart', function () {
         let btn = document.getElementById("map-search-btn")
+        setSelectedMarker(-1)
         btn.disabled = true
     });
     map.on('moveend', function () {
@@ -52,10 +58,7 @@ function makeMap(c) {
         btn.disabled = false
     });
 
-    getData({
-        lng: center[0],
-        lat: center[1]
-    })
+    getData()
 }
 
 function searchBtnClicked() {
@@ -71,14 +74,43 @@ function onDownloadClicked() {
     downloadMapData({"data": data}, [center.lng, center.lat])
 }
 
+function setSelectedMarker(idx) {
+    if (selected.row != null) {
+        selected.row.classList.remove("selected-row")
+    }
+    if (selected.marker != null) {
+        selected.marker.classList.remove("selected-marker")
+    }
+
+    if (idx === -1) {
+        selected.row = null
+        selected.marker = null
+    } else {
+        console.log(idx, markers[idx])
+
+        selected.row = rows[idx]
+        selected.marker = markers[idx]._element
+        selected.row.classList.add("selected-row")
+        selected.marker.classList.add("selected-marker")
+    }
+}
+
 async function getData() {
+    setSelectedMarker(-1)
+
     const center = map.getCenter()
     const long = center.lng
     const lat = center.lat
     const rad = 4 //dubito che abbia senso uno diverso
 
     try {
-        const response = await fetch(request_format.format(lat, long, rad))
+        const response = await fetch(request_url.format(lat, long, rad), {
+            method: "GET",
+            headers: {
+                //FIXME: l'auth NON dovrebbe funzionare così
+                "Authorization": auth
+            }
+        })
         const stats = (await response.json()).statuses
 
         //Filtraggio dei dati ricevuti da twitter
@@ -106,16 +138,22 @@ async function getData() {
         while (column.hasChildNodes()) {
             column.removeChild(column.lastChild);
         }
-
+        rows = []
         markers.forEach((m) => m.remove())
+        markers = []
 
         if (data.length > 0) {
-            data.forEach((d) => {
+            data.forEach((d, i) => {
                 let c = JSON.parse(d.coords)
                 if (c != null) {
                     // create a HTML element for each feature
                     let el = document.createElement('div')
                     el.className = "tweet-marker"
+
+                    let marker_idx = markers.length
+                    el.addEventListener('click', () => {
+                        setSelectedMarker(marker_idx)
+                    })
 
                     // make a marker for each feature and add to the map
                     markers.push(new mapboxgl.Marker(el).setLngLat(c).addTo(map))
@@ -124,6 +162,7 @@ async function getData() {
                 let row = document.createElement("div")
                 row.className = "row"
                 row.textContent = d.text
+                rows.push(row)
                 column.append(row)
             })
         } else {
@@ -134,14 +173,5 @@ async function getData() {
         }
     } catch (e) {
         console.error(e)
-    }
-}
-
-if (!String.prototype.format) {
-    String.prototype.format = function () {
-        const args = arguments;
-        return this.replace(/{(\d+)}/g, (match, number) => {
-            return (typeof args[number] != 'undefined') ? args[number] : match
-        })
     }
 }

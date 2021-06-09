@@ -9,13 +9,13 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import os
 import env
-
 from pathlib import Path
+from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -26,8 +26,7 @@ SECRET_KEY = env.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["hashtalytics.xyz", "127.0.0.1", "localhost"]
-
+ALLOWED_HOSTS = [env.WEBSITE_URL, "127.0.0.1", "localhost"]
 
 # Application definition
 
@@ -42,21 +41,23 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'compressor',
-    'basicauth',
     'tweepy',
+    'django_crontab',
 ]
 
-BASICAUTH_USERS = {'user':'pass', 'admin':'admin'}
+CRONJOBS = [
+    ('0 * * * *', 'api.cron.crono_trends', '> /tmp/job.log 2>&1'),
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'basicauth.middleware.BasicAuthMiddleware',
 ]
 
 ROOT_URLCONF = 'Hashtalytics.urls'
@@ -79,7 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Hashtalytics.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -89,7 +89,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -109,11 +108,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGES = (
+    ('it', _('Italiano')),
+    ('en', _('English')),
+)
+
+LANGUAGE_CODE = 'it'
 
 TIME_ZONE = 'UTC'
 
@@ -123,13 +126,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_ROOT = 'website/static'
 STATIC_URL = '/static/'
-STATICFILES_FINDERS = [ 'compressor.finders.CompressorFinder' ]
+STATICFILES_FINDERS = ['compressor.finders.CompressorFinder']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -139,3 +145,7 @@ COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = 'website-home'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'website-home'

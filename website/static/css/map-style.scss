@@ -1,11 +1,22 @@
 $color: #D8E1FF;
 
 .tweet-marker {
-    $side: 30px;
-    background-image: url('../icons/mapbox-icon.png');
+    &.selected-marker {
+        background-image: url('../icons/mapbox-icon-selected.png');
+        $side: 50px;
+        width: $side;
+        height: $side;
+    }
+
+    &:not(.selected-marker) {
+        background-image: url('../icons/mapbox-icon.png');
+        $side: 30px;
+        width: $side;
+        height: $side;
+    }
+
+
     background-size: cover;
-    width: $side;
-    height: $side;
     border-radius: 50%;
     cursor: pointer;
 }
@@ -19,7 +30,15 @@ $color: #D8E1FF;
     padding: 2vh;
 
     & > .row:not(.alert) {
-        background: $color;
+
+        &.selected-row {
+            background: #9bff87;
+        }
+
+        &:not(.selected-row) {
+            background: $color;
+        }
+
         border-radius: 2px;
         margin-top: 10px;
         margin-bottom: 10px;

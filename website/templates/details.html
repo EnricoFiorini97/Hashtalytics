@@ -1,69 +1,100 @@
 {% extends 'index.html' %}
-{% load crispy_forms_tags %}
-{% crispy example_form example_form.helper %}
+{% load static %}
+{% load i18n %}
 
 {% block content %}
+    <!--share buttons-->
+    {% include "share-btns.html" %}
+    <!--end share buttons-->
+
     <div class="container">
     <div class="row">
     <div id="page-header" class="col">
-        {% block head %}
-            {#            {% if tag == '@' %}#}
-            {#            <h1 class="text-center">Tweets di#}
-            {#              <a href="https://twitter.com/{{ hasher }}">#}
-            {#                {{ tag }}{{ hasher }}#}
-            {#              </a>#}
-            {#            </h1>#}
-            {#            {% endif %}#}
-            <h1 class="text-center">
-                Pagina di dettaglio
-            </h1>
-        {% endblock head %}
         {% if not error and hasher %}
+            {% if tag == "#" %}
+                <h1 class="text-center"> {% trans 'Tweets contenenti' %}
+                    <a href="https://twitter.com/search?q=%23{{ hasher }}&src=hashtag_click">#{{ hasher }}</a>
+                </h1>
+            {% elif tag == "@" %}
+                <h1 class="text-center"> {% trans 'Tweets di' %}
+                    <a href="https://twitter.com/{{ hasher }}">@{{ hasher }}</a>
+                </h1>
+                {% if has_timeline %}
+                    <div class="d-flex justify-content-center">
+                        <a href="{% url 'timeline' hasher %}">
+                            <button type="button" class="btn btn-primary btn-lg">
+                                {% blocktranslate %}Vai alla timeline di {{ hasher }}{% endblocktranslate %}
+                            </button>
+                        </a>
+                    </div>
+                {% endif %}
+            {% else %}
+                <h1 class="text-center">{% trans 'Tweets contenenti la parola' %}
+                    <a href="https://twitter.com/search?q=%23{{ hasher }}&src=hashtag_click">{{ hasher }}</a>
+                </h1>
+            {% endif %}
             <div class="d-flex justify-content-center">
                 {{ tweets|json_script:"tweets-data" }}
                 <button type="button" class="btn btn-primary btn-lg"
-                        onclick="
-                                downloadData(
-                                document.getElementById('tweets-data').textContent,
-                                '{{ tag }}',
-                                '{{ hasher }}'
-                                )
-                                "
-                >
+                        onclick="downloadDetailsData(document.getElementById('tweets-data').textContent,'{{ tag }}','{{ hasher }}')">
                     Download CSV
                 </button>
             </div>
+
         {% endif %}
     </div>
 
+    <!--grafico-->
+    {% if not error %}
+        <div class="row d-flex justify-content-evenly align-items-center">
+            <div class="col-6">
+                <canvas id="myChart"></canvas>
+                {{ tweets|json_script:"tweets-data" }}
+            </div>
+            <div class="col-5">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">{% trans "Percentuale dei tweet geolocalizzati" %}</th>
+                        <th scope="col">{% trans "Media Oraria" %}</th>
+                        <th scope="col">{% trans "Orario medio di pubblicazione" %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><p id="perc-loc"></p></td>
+                        <td><p id="med-or"></p></td>
+                        <td><p id="ora-pub"></p></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
 
     <div class="py-5">
     <div class="container">
         <div class="row hidden-md-up">
             {% if error %}
                 <div class="alert alert-danger" role="alert">{{ error }}</div>
-            {% endif %}
-            {% block before_tweets %}
-            {% endblock before_tweets %}
-            {% block tweets %}
+            {% else %}
                 {% for tweet in tweets %}
-                    <!--Card Header-->
                     <div class="col-md-4" style="padding-top: 5vh; ">
                         <div class="card w-70">
+                            <!--Card Header-->
                             <div class="card-header">
-                                {% if tag == '@' %}
-                                    <div class="d-flex flex-row justify-content-start">
-                                        <div class="p-2">
-                                            <img src="{{ tweet.user.profile_image_url_https }}" alt="ProPic"
-                                                 class="rounded-circle">
-                                        </div>
-                                        <div class="p-2">
-                                            <a href="https://twitter.com/{{ hasher }}">
-                                                <h5 class="card-title" style="padding:2vh">{{ tag }}{{ hasher }}</h5>
-                                            </a>
-                                        </div>
+                                <div class="d-flex flex-row justify-content-start">
+                                    <div class="p-2">
+                                        <img src="{{ tweet.user.profile_image_url_https }}" alt="ProPic"
+                                             class="rounded-circle">
                                     </div>
-                                {% endif %}
+                                    <div class="p-2">
+                                        <a href="https://twitter.com/{{ tweet.user.screen_name }}">
+                                            <h5 class="card-title"
+                                                style="padding:2vh">{{ tweet.user.screen_name }}</h5>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <!--Card Body-->
                             <div class="card-body">
@@ -79,13 +110,15 @@
                                     </div>
                                     <div class="order-2 p-2">
                                         <a href="https://twitter.com/anyuser/status/{{ tweet.id }}">
-                                            <h6 class="card-subtitle text-muted text-align-center" style="padding: 1vh">
+                                            <h6 class="card-subtitle text-muted text-align-center"
+                                                style="padding: 1vh">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                     fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                                                     fill="currentColor" class="bi bi-link-45deg"
+                                                     viewBox="0 0 16 16">
                                                     <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"></path>
                                                     <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"></path>
                                                 </svg>
-                                                Vai al tweet
+                                                {% trans "Vai al tweet" %}
                                             </h6>
                                         </a>
                                     </div>
@@ -94,11 +127,19 @@
                         </div>
                     </div>
                 {% endfor %}
-            {% endblock tweets %}
-
-            {% block after_tweets %}
-            {% endblock after_tweets %}
+            {% endif %}
         </div>
     </div>
+{% endblock %}
 
+{% block extra-scripts %}
+    <!--statistiche-->
+    <script>
+        var tag = '{{ tag }}'
+        var hasher = '{{ hasher }}'
+    </script>
+    <script src="{% static "js/details-scripts/details-stats.js" %}"></script>
+
+    <!--share buttons script-->
+    <script src="{% static "js/details-scripts/details-share.js" %}"></script>
 {% endblock %}

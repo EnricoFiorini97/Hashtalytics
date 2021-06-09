@@ -1,0 +1,61 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <div class="container">
+        <div class="col align-items-center">
+            <div id="page-header" class="row">
+                <h1 class="text-center display-2">
+                    {% blocktranslate with name=user.username %}Profilo di {{ name }}{% endblocktranslate %}
+                </h1>
+                <p class="text-center">{% trans "Riceverai un alert se una tua keyword è in tendenza" %}</p>
+            </div>
+            <div class="d-flex flex-row align-items-center my-3">
+                <div class="col input-group" style="padding-right: 10px">
+                    <input type="text" id="new_word_input" class="form-control"
+                           placeholder={% trans 'Inserisci parola chiave' %} aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button"
+                                onclick="addNewWord()">{% trans 'Invia' %}</button>
+                    </div>
+                </div>
+                <div class="flex-col justify-content-around">
+                    <button id="delete-btn" class="col btn btn-warning" disabled
+                            onclick="deleteSelected()">{% trans "Cancella selezionati" %}</button>
+                    <button id="delete-all-btn" class="col btn btn-danger" {% if words == '[]' %} disabled {% endif %}
+                            onclick="deleteAll()">{% trans "Cancella tutto" %}</button>
+                </div>
+            </div>
+
+
+            <ul id="keyword_list" class="row list-group">
+                {# Le linee sono inserite qui solo via JS #}
+            </ul>
+        </div>
+    </div>
+
+    <template id="keyword_row">
+        <li class="list-group-item d-flex flex-row">
+            <input class="flex-col form-check-input" onclick="setSelected(this)" type="checkbox" value="{0}"
+                   style="margin-right: 10px"
+                   aria-label="...">
+            <div class="flex-col flex-fill">{1}</div>
+        </li>
+    </template>
+{% endblock %}
+
+{% block extra-scripts %}
+    <!-- script profilo -->
+    <script src="{% static 'js/profile.js' %}"></script>
+    <script>
+        const user = "{{ user.username }}"
+        const auth = "{{ auth }}"
+        const request_url = '{% url 'set-keywords' %}'
+        const trend_check_url = '{% url 'check-trending' '{0}' %}'
+                                .replaceAll("%7B", "{").replaceAll("%7D", "}") //bruttino lo so
+        var elements = JSON.parse('{{ words | escapejs }}')
+        var trending = JSON.parse('{{ trending | escapejs }}')
+        initList()
+    </script>
+{% endblock %}

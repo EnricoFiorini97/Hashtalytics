@@ -9,9 +9,10 @@ SECRET_KEY = "token"
 # ask the maintainers for these keys
 API_KEY = "token"
 API_SECRETKEY = "token"
-BEARER_TOKEN = "token"
+MY_BEARER_TOKEN = "token"
 ACCESS_TOKEN = "token"
 ACCESS_TOKEN_SECRET = "token"
 
+WEBSITE_URL = "hashtalytics.xyz"
 # public key, nothing secret
 MAPBOX_PUB_KEY = "pk.eyJ1IjoiYW5kdGVyOTkiLCJhIjoiY2tueWR0N2o4MWZkYjJvcm1hNXU4eHJqbiJ9.cWh9lYnPyEjGPQF9a1UWuQ"
